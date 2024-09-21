@@ -1,85 +1,79 @@
-// i did learn that prasefloat return regular calculation into float number like 100/3 = 33.333333333
-
+// Get the display element
 const display = document.getElementById("Display");
-let currentInput = ""; 
-let numbers = []; 
-let operators = []; 
 
-// its been made with array approach other than the every opration got its function, it makes the code easier and cleaner for me
+// Variables to store the current input and operations
+let currentInput = "";
+let operator = null;
+let firstValue = null;
 
-
-// here how we translate the buttons to input into the display
+// Get all the buttons and add click listeners
 document.querySelectorAll("button").forEach(button => {
     button.addEventListener("click", function() {
         const value = button.getAttribute("data-num");
 
-        // clear button
-        if (button.classList.contains("btn-clear")) {
+        // If it's the clear button, reset everything
+        if (value === "C") {
             clearDisplay();
-        } 
-        // equal button
-        else if (button.classList.contains("btn-equal")) {
+        }
+        // If it's the equals button, perform the calculation
+        else if (value === "=") {
             calculateResult();
-        } 
-        // operator buttons
-        else if (['+', '-', '*', '/'].includes(value)) {
-            addOperator(value);
-        } 
-        // For numbers and decimal
+        }
+        // If it's an operator (+, -, *, /), save the first value and operator
+        else if (["+", "-", "*", "/"].includes(value)) {
+            setOperator(value);
+        }
+        // For numbers and decimal points, add to the current input
         else {
             appendToInput(value);
         }
     });
 });
 
-// display.innertext "display the clicked button to display screen"
+// Function to clear the display and reset variables
+function clearDisplay() {
+    currentInput = "";
+    operator = null;
+    firstValue = null;
+    display.innerText = "0";
+}
+
+// Function to append numbers and decimal points to the current input
 function appendToInput(value) {
     currentInput += value;
     display.innerText = currentInput;
 }
 
-function addOperator(operator) {
+// Function to set the operator and save the first value
+function setOperator(op) {
     if (currentInput !== "") {
-        numbers.push(parseFloat(currentInput)); // Push the current number to the numbers array
-        operators.push(operator); // Push the operator to the operators array
-        currentInput = ""; // Reset current input to allow for the next number
+        firstValue = parseFloat(currentInput);
+        operator = op;
+        currentInput = "";
     }
 }
 
+// Function to calculate and display the result
 function calculateResult() {
-    if (currentInput !== "") {
-        numbers.push(parseFloat(currentInput)); // Push the last number
-    }
+    if (firstValue !== null && currentInput !== "") {
+        const secondValue = parseFloat(currentInput);
+        let result = 0;
 
-    let result = numbers[0]; // Start with the first number
-
-    // Iterate over operators and numbers to perform the calculations
-    for (let i = 0; i < operators.length; i++) {
-        if (operators[i] === "+") {
-            result += numbers[i + 1];
-        } else if (operators[i] === "-") {
-            result -= numbers[i + 1];
-        } else if (operators[i] === "*") {
-            result *= numbers[i + 1];
-        } else if (operators[i] === "/") {
-            result /= numbers[i + 1];
+        // Perform the correct operation based on the operator
+        if (operator === "+") {
+            result = firstValue + secondValue;
+        } else if (operator === "-") {
+            result = firstValue - secondValue;
+        } else if (operator === "*") {
+            result = firstValue * secondValue;
+        } else if (operator === "/") {
+            result = firstValue / secondValue;
         }
+
+        // Update the display with the result and reset for next calculation
+        display.innerText = result;
+        currentInput = "";
+        firstValue = null;
+        operator = null;
     }
-    
-    display.innerText = result; // Display the result
-    resetCalculator(); // Reset for the next calculation
 }
-
-function clearDisplay() {
-    currentInput = "";
-    numbers = [];
-    operators = [];
-    display.innerText = "0";
-}
-
-function resetCalculator() {
-    currentInput = "";
-    numbers = [];
-    operators = [];
-}
-
